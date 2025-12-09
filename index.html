@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상하이 4박 5일 여행 플래너</title>
+    <style>
+        :root {
+            --color-red-primary: #E74C3C;
+            --color-red-light: #EC7063;
+            --color-red-bg: #F5B7B1;
+            --color-text-dark: #2C3E50;
+            --color-text-light: #7F8C8D;
+            --color-white: #FFFFFF;
+            --color-gray-light: #ECF0F1;
+            --color-gray-lighter: #F8F9FA;
+            --color-blue-accent: #3498DB;
+            --color-green-accent: #27AE60;
+            --color-purple-accent: #9B59B6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: var(--color-text-dark);
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: var(--color-white);
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--color-red-primary) 0%, var(--color-red-light) 100%);
+            color: var(--color-white);
+            padding: 24px 20px;
+            border-radius: 0 0 24px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            opacity: 0.95;
+            margin-bottom: 16px;
+        }
+
+        .progress-section {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-text {
+            font-size: 14px;
+        }
+
+        .progress-percent {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .country-badge {
+            background: var(--color-white);
+            color: var(--color-red-primary);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Day Tabs */
+        .day-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 16px 12px;
+            overflow-x: auto;
+            background-color: var(--color-gray-lighter);
+            border-bottom: 1px solid var(--color-gray-light);
+        }
+
+        .day-tabs::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .day-tabs::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .day-tabs::-webkit-scrollbar-thumb {
+            background: var(--color-gray-light);
+            border-radius: 2px;
+        }
+
+        .day-tab {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            background-color: var(--color-white);
+            color: var(--color-text-light);
+            border: 1px solid var(--color-gray-light);
+        }
+
+        .day-tab.active {
+            background-color: var(--color-text-dark);
+            color: var(--color-white);
+            border-color: var(--color-text-dark);
+        }
+
+        .day-tab:hover {
+            border-color: var(--color-text-light);
+        }
+
+        /* Theme Tag */
+        .theme-tag {
+            display: inline-block;
+            background-color: var(--color-gray-light);
+            color: var(--color-text-dark);
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+            margin: 12px 0;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 0 16px 40px;
+        }
+
+        /* Event Card */
+        .event-card {
+            background-color: var(--color-white);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-left: 5px solid var(--color-blue-accent);
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--color-gray-light);
+            border-left: 5px solid var(--color-blue-accent);
+        }
+
+        .event-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .event-card.completed {
+            opacity: 0.75;
+            background-color: rgba(39, 174, 96, 0.05);
+            border-left-color: var(--color-green-accent);
+        }
+
+        .event-card.attraction {
+            border-left-color: var(--color-red-primary);
+            background: var(--color-white);
+        }
+
+        .event-card.attraction.completed {
+            border-left-color: var(--color-green-accent);
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.05) 0%, transparent 100%);
+        }
+
+        .event-header {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: flex-start;
+        }
+
+        .event-icon {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            background-color: var(--color-gray-lighter);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .event-card.attraction .event-icon {
+            background-color: rgba(231, 76, 60, 0.15);
+        }
+
+        .event-time-and-title {
+            flex: 1;
+        }
+
+        .event-time {
+            font-size: 13px;
+            color: var(--color-blue-accent);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .event-card.attraction .event-time {
+            color: var(--color-red-primary);
+        }
+
+        .event-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--color-text-dark);
+            margin: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .attraction-badge {
+            display: inline-block;
+            background-color: var(--color-red-primary);
+            color: var(--color-white);
+            font-size: 9px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .event-description {
+            font-size: 13px;
+            color: var(--color-text-light);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .event-location {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: var(--color-blue-accent);
+            font-weight: 600;
+            padding: 6px 8px;
+            background-color: var(--color-gray-lighter);
+            border-radius: 6px;
+            width: fit-content;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .event-location:hover {
+            background-color: #E3F2FD;
+            color: var(--color-red-primary);
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--color-gray-light);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            margin-left: auto;
+            min-width: 24px;
+            background-color: var(--color-white);
+            font-size: 14px;
+        }
+
+        .event-card.completed .checkbox {
+            background-color: var(--color-green-accent);
+            border-color: var(--color-green-accent);
+            color: var(--color-white);
+        }
+
+        .checkbox:hover {
+            border-color: var(--color-blue-accent);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+        }
+
+        /* Location Link Style */
+        .event-location {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: var(--color-blue-accent);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .event-location:hover {
+            color: var(--color-red-primary);
+            text-decoration: underline;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+
+            .header {
+                border-radius: 0;
+            }
+
+            .header-title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-title">상하이 4박 5일</div>
+                <div class="header-subtitle">핵심 어트랙션 3개 정복하기</div>
+                <div class="progress-section">
+                    <div>
+                        <div class="progress-text">여행 진행률</div>
+                        <div class="progress-percent" id="progressPercent">0%</div>
+                    </div>
+                    <div class="country-badge">CN</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day Tabs -->
+        <div class="day-tabs" id="dayTabs">
+            <button class="day-tab active" data-day="0">Day 1</button>
+            <button class="day-tab" data-day="1">Day 2</button>
+            <button class="day-tab" data-day="2">Day 3</button>
+            <button class="day-tab" data-day="3">Day 4</button>
+            <button class="day-tab" data-day="4">Day 5</button>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Day Content -->
+            <div id="dayContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const tripData = [
+            {
+                day: 1,
+                theme: "푸둥 스카이라인 & 야경",
+                events: [
+                    {
+                        time: "14:00",
+                        title: "상하이 도착 및 체크인",
+                        description: "공항(푸둥/홍차오) 도착 후 시내 호텔로 이동 및 짐 정리.",
+                        location: "숙소 (푸둥 또는 인민광장 일대 추천)",
+                        icon: "✈️",
+                        completed: false
+                    },
+                    {
+                        time: "16:00",
+                        title: "루자쭈이 전망대 방문",
+                        description: "동방명주·상하이타워·SWFC 중 한 곳 전망대에서 황푸강과 상하이 전경 감상.",
+                        location: "루자쭈이 금융지구",
+                        icon: "📷",
+                        completed: false,
+                        isAttraction: true
+                    },
+                    {
+                        time: "19:30",
+                        title: "황푸강 야경 크루즈",
+                        description: "배를 타고 와이탄과 푸둥 스카이라인 야경 감상.",
+                        location: "황푸강",
+                        icon: "🚢",
+                        completed: false
+                    }
+                ]
+            },
+            {
+                day: 2,
+                theme: "와이탄 & 난징동루",
+                events: [
+                    {
+                        time: "10:00",
+                        title: "와이탄 산책",
+                        description: "역사적인 건물을 따라 황푸강 강변을 산책하며 푸둥 스카이라인 사진 촬영.",
+                        location: "와이탄",
+                        icon: "📷",
+                        completed: false
+                    },
+                    {
+                        time: "12:00",
+                        title: "난징동루 & 점심",
+                        description: "보행자 거리에서 쇼핑과 로컬 음식(샤오롱바오 등) 즐기기.",
+                        location: "난징동로",
+                        icon: "🍜",
+                        completed: false
+                    },
+                    {
+                        time: "15:00",
+                        title: "인민광장 주변 산책",
+                        description: "인민광장 공원, 근처 백화점 또는 카페 휴식.",
+                        location: "인민광장",
+                        icon: "🚶",
+                        completed: false
+                    },
+                    {
+                        time: "20:00",
+                        title: "와이탄 야경 재방문(선택)",
+                        description: "해 질 무렵 다시 와이탄에서 야경 감상.",
+                        location: "와이탄",
+                        icon: "⭐",
+                        completed: false
+                    }
+                ]
+            },
+            {
+                day: 3,
+                theme: "올드타운 & 예원",
+                events: [
+                    {
+                        time: "10:00",
+                        title: "예원 & 예원 상점가",
+                        description: "전통 정원 예원과 주변 상점가에서 산책 및 기념품 쇼핑.",
+                        location: "예원",
+                        icon: "📷",
+                        completed: false,
+                        isAttraction: true
+                    },
+                    {
+                        time: "12:30",
+                        title: "난샹만터우점 등 점심",
+                        description: "상하이식 딤섬, 샤오롱바오 맛보기.",
+                        location: "올드타운",
+                        icon: "🍜",
+                        completed: false
+                    },
+                    {
+                        time: "15:00",
+                        title: "상하이 구시가지 골목 산책",
+                        description: "오래된 골목과 전통 건물 구경, 사진 촬영.",
+                        location: "올드타운",
+                        icon: "🗺️",
+                        completed: false
+                    }
+                ]
+            },
+            {
+                day: 4,
+                theme: "프랑스 조계지 & 신톈디",
+                events: [
+                    {
+                        time: "10:00",
+                        title: "프랑스 조계지 산책",
+                        description: "플라타너스 가로수길, 감성 카페, 부티크 숍 탐방.",
+                        location: "프랑스 조계지",
+                        icon: "📷",
+                        completed: false,
+                        isAttraction: true
+                    },
+                    {
+                        time: "13:00",
+                        title: "톈즈팡 골목 탐방",
+                        description: "소규모 갤러리와 소품샵, 카페가 모여 있는 예술 거리 산책.",
+                        location: "톈즈팡",
+                        icon: "🎨",
+                        completed: false
+                    },
+                    {
+                        time: "17:00",
+                        title: "신톈디 저녁 & 바",
+                        description: "리노베이션된 석고우(옛 주택) 거리에서 식사와 간단한 술 한잔.",
+                        location: "신톈디",
+                        icon: "🍸",
+                        completed: false
+                    }
+                ]
+            },
+            {
+                day: 5,
+                theme: "어트랙션 3개 마무리",
+                events: [
+                    {
+                        time: "10:00",
+                        title: "자유 일정 / 쇼핑",
+                        description: "마지막 쇼핑(난징서루, 쇼핑몰 등) 또는 카페에서 휴식.",
+                        location: "난징서로",
+                        icon: "🛍️",
+                        completed: false
+                    },
+                    {
+                        time: "13:00",
+                        title: "점심 & 체크아웃 준비",
+                        description: "호텔에서 체크아웃 준비.",
+                        location: "숙소",
+                        icon: "🍜",
+                        completed: false
+                    },
+                    {
+                        time: "16:00",
+                        title: "공항 이동 및 출국",
+                        description: "상하이를 떠나 공항으로 이동.",
+                        location: "푸둥/홍차오 공항",
+                        icon: "✈️",
+                        completed: false
+                    }
+                ]
+            }
+        ];
+
+        let currentDay = 0;
+        const completedEvents = new Set();
+
+        function updateProgress() {
+            const totalEvents = tripData.reduce((sum, day) => sum + day.events.length, 0);
+            const completedCount = completedEvents.size;
+            const percentage = Math.round((completedCount / totalEvents) * 100);
+            document.getElementById('progressPercent').textContent = percentage + '%';
+        }
+
+        function renderDayContent(dayIndex) {
+            const day = tripData[dayIndex];
+            const contentDiv = document.getElementById('dayContent');
+            
+            contentDiv.innerHTML = `
+                <div class="theme-tag">${day.theme}</div>
+                <div style="position: relative;">
+                ${day.events.map((event, idx) => {
+                    const eventId = `${dayIndex}-${idx}`;
+                    const isCompleted = completedEvents.has(eventId);
+                    return `
+                        <div class="event-card ${event.isAttraction ? 'attraction' : ''} ${isCompleted ? 'completed' : ''}" data-event-id="${eventId}">
+                            <div class="event-header">
+                                <div class="event-icon">${event.icon}</div>
+                                <div class="event-time-and-title">
+                                    <div class="event-time">${event.time}</div>
+                                    <div class="event-title">
+                                        ${event.title}
+                                        ${event.isAttraction ? '<span class="attraction-badge">CORE</span>' : ''}
+                                    </div>
+                                    <div class="event-description">${event.description}</div>
+                                    <div class="event-location" data-location="${event.location}" onclick="openGoogleMaps('${event.location}')" title="지도 보기">
+                                        📍${event.location}
+                                    </div>
+                                </div>
+                                <div class="checkbox">
+                                    ${isCompleted ? '✓' : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+                </div>
+            `;
+
+            // Add event listeners to cards and checkboxes
+            document.querySelectorAll('.event-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const eventId = this.dataset.eventId;
+                    if (completedEvents.has(eventId)) {
+                        completedEvents.delete(eventId);
+                    } else {
+                        completedEvents.add(eventId);
+                    }
+                    updateProgress();
+                    renderDayContent(currentDay);
+                });
+            });
+        }
+
+        function setupDayTabs() {
+            document.querySelectorAll('.day-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentDay = parseInt(this.dataset.day);
+                    renderDayContent(currentDay);
+                });
+            });
+        }
+
+        // Google Maps Location Data
+        const locationCoordinates = {
+            "루자쭈이 금융지구": { lat: 31.7406, lng: 121.5065 },
+            "숙소 (푸둥 또는 인민광장 일대 추천)": { lat: 31.2304, lng: 121.4737 },
+            "황푸강": { lat: 31.2389, lng: 121.5080 },
+            "와이탄": { lat: 31.2304, lng: 121.4865 },
+            "난징동로": { lat: 31.2377, lng: 121.4741 },
+            "인민광장": { lat: 31.2304, lng: 121.4737 },
+            "예원": { lat: 31.2263, lng: 121.4994 },
+            "올드타운": { lat: 31.2246, lng: 121.4995 },
+            "프랑스 조계지": { lat: 31.1927, lng: 121.4549 },
+            "톈즈팡": { lat: 31.1870, lng: 121.4527 },
+            "신톈디": { lat: 31.1881, lng: 121.4562 },
+            "난징서로": { lat: 31.2312, lng: 121.4277 },
+            "푸둥/홍차오 공항": { lat: 31.1437, lng: 121.8053 }
+        };
+
+        function openGoogleMaps(location) {
+            const coords = locationCoordinates[location];
+            if (coords) {
+                const mapsUrl = `https://www.google.com/maps/search/${coords.lat},${coords.lng}`;
+                window.open(mapsUrl, '_blank');
+            }
+        }
+
+        // Initialize
+        setupDayTabs();
+        renderDayContent(0);
+        updateProgress();
+    </script>
+</body>
+</html>
