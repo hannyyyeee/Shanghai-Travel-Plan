@@ -664,41 +664,6 @@
 
         // Google Maps Location Data
         const locationCoordinates = {
-            "인천국제공항            `;
-
-            // Add event listeners to cards and checkboxes
-            document.querySelectorAll('.event-card').forEach(card => {
-                card.addEventListener('click', function(e) {
-                    const eventId = this.dataset.eventId;
-
-                    // if (e.target.closest('.event-location')) return; // 원하면 위치 클릭 제외
-
-                    if (completedEvents.has(eventId)) {
-                        completedEvents.delete(eventId);
-                    } else {
-                        completedEvents.add(eventId);
-                    }
-                    saveCompletedEvents();
-                    updateProgress();
-                    renderDayContent(currentDay);
-                });
-            });
-        }
-
-        function setupDayTabs() {
-            document.querySelectorAll('.day-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    currentDay = parseInt(this.dataset.day);
-                    saveLastDay();
-                    renderDayContent(currentDay);
-                });
-            });
-        }
-
-        // Google Maps Location Data
-        const locationCoordinates = {
             "인천국제공항": { lat: 37.4601, lng: 126.4407 },
             "숙소": { lat: 31.2304, lng: 121.4737 },
             "황푸강": { lat: 31.2389, lng: 121.5080 },
