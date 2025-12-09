@@ -395,19 +395,19 @@
                 theme: "푸둥 스카이라인 & 야경",
                 events: [
                     {
-                        time: "14:00",
-                        title: "상하이 도착 및 체크인",
-                        description: "공항(푸둥/홍차오) 도착 후 시내 호텔로 이동 및 짐 정리.",
-                        location: "숙소 (푸둥 또는 인민광장 일대 추천)",
+                        time: "16:10",
+                        title: "출발",
+                        description: "비행기 탑승 수속 및 출국 심사",
+                        location: "인천국제공항",
                         icon: "✈️",
                         completed: false
                     },
                     {
-                        time: "16:00",
-                        title: "루자쭈이 전망대 방문",
-                        description: "동방명주·상하이타워·SWFC 중 한 곳 전망대에서 황푸강과 상하이 전경 감상.",
-                        location: "루자쭈이 금융지구",
-                        icon: "📷",
+                        time: "18:00",
+                        title: "호텔 체크인",
+                        description: "상하이 도착 후 시내 호텔로 이동",
+                        location: "숙소",
+                        icon: "🏨",
                         completed: false,
                         isAttraction: true
                     },
@@ -534,7 +534,7 @@
                         completed: false
                     },
                     {
-                        time: "13:00",
+                        time: "11:00",
                         title: "점심 & 체크아웃 준비",
                         description: "호텔에서 체크아웃 준비.",
                         location: "숙소",
@@ -542,10 +542,10 @@
                         completed: false
                     },
                     {
-                        time: "16:00",
-                        title: "공항 이동 및 출국",
-                        description: "상하이를 떠나 공항으로 이동.",
-                        location: "푸둥/홍차오 공항",
+                        time: "14:25",
+                        title: "출발",
+                        description: "비행기 탑승 수속 및 출국 심사",
+                        location: "푸둥국제공항",
                         icon: "✈️",
                         completed: false
                     }
@@ -664,7 +664,42 @@
 
         // Google Maps Location Data
         const locationCoordinates = {
-            "루자쭈이 금융지구": { lat: 31.7406, lng: 121.5065 },
+            "인천국제공항            `;
+
+            // Add event listeners to cards and checkboxes
+            document.querySelectorAll('.event-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    const eventId = this.dataset.eventId;
+
+                    // if (e.target.closest('.event-location')) return; // 원하면 위치 클릭 제외
+
+                    if (completedEvents.has(eventId)) {
+                        completedEvents.delete(eventId);
+                    } else {
+                        completedEvents.add(eventId);
+                    }
+                    saveCompletedEvents();
+                    updateProgress();
+                    renderDayContent(currentDay);
+                });
+            });
+        }
+
+        function setupDayTabs() {
+            document.querySelectorAll('.day-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentDay = parseInt(this.dataset.day);
+                    saveLastDay();
+                    renderDayContent(currentDay);
+                });
+            });
+        }
+
+        // Google Maps Location Data
+        const locationCoordinates = {
+            "인천국제공항": { lat: 37.4601, lng: 126.4407 },
             "숙소 (푸둥 또는 인민광장 일대 추천)": { lat: 31.2304, lng: 121.4737 },
             "황푸강": { lat: 31.2389, lng: 121.5080 },
             "와이탄": { lat: 31.2304, lng: 121.4865 },
@@ -676,7 +711,7 @@
             "톈즈팡": { lat: 31.1870, lng: 121.4527 },
             "신톈디": { lat: 31.1881, lng: 121.4562 },
             "난징서로": { lat: 31.2312, lng: 121.4277 },
-            "푸둥/홍차오 공항": { lat: 31.1437, lng: 121.8053 }
+            "푸둥국제공항": { lat: 31.1437, lng: 121.8053 }
         };
 
         function openGoogleMaps(location) {
