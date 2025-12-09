@@ -556,8 +556,9 @@
         let currentDay = 0;
         let completedEvents = new Set();
 
-        // ---- localStorage 연동 함수 ----
+        // ---- localStorage 연동 키 ----
         const STORAGE_KEY = 'shanghai_completed_events_v1';
+        const LAST_DAY_KEY = 'shanghai_last_day_v1';
 
         function loadCompletedEvents() {
             const saved = localStorage.getItem(STORAGE_KEY);
@@ -573,6 +574,18 @@
 
         function saveCompletedEvents() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify([...completedEvents]));
+        }
+
+        function loadLastDay() {
+            const saved = localStorage.getItem(LAST_DAY_KEY);
+            const n = parseInt(saved, 10);
+            if (!isNaN(n) && n >= 0 && n < tripData.length) {
+                currentDay = n;
+            }
+        }
+
+        function saveLastDay() {
+            localStorage.setItem(LAST_DAY_KEY, String(currentDay));
         }
         // ------------------------------
 
@@ -623,8 +636,7 @@
                 card.addEventListener('click', function(e) {
                     const eventId = this.dataset.eventId;
 
-                    // 위치 클릭으로 인한 중복 토글을 막고 싶으면 아래 if로 거를 수 있음
-                    // if (e.target.closest('.event-location')) return;
+                    // if (e.target.closest('.event-location')) return; // 원하면 위치 클릭 제외
 
                     if (completedEvents.has(eventId)) {
                         completedEvents.delete(eventId);
@@ -644,6 +656,7 @@
                     document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
                     currentDay = parseInt(this.dataset.day);
+                    saveLastDay();
                     renderDayContent(currentDay);
                 });
             });
@@ -676,8 +689,16 @@
 
         // Initialize
         loadCompletedEvents();
+        loadLastDay();
         setupDayTabs();
-        renderDayContent(0);
+
+        // currentDay에 맞춰 탭 active 상태 동기화
+        document.querySelectorAll('.day-tab').forEach(tab => {
+            const idx = parseInt(tab.dataset.day);
+            tab.classList.toggle('active', idx === currentDay);
+        });
+
+        renderDayContent(currentDay);
         updateProgress();
     </script>
 </body>
