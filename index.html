@@ -554,7 +554,27 @@
         ];
 
         let currentDay = 0;
-        const completedEvents = new Set();
+        let completedEvents = new Set();
+
+        // ---- localStorage 연동 함수 ----
+        const STORAGE_KEY = 'shanghai_completed_events_v1';
+
+        function loadCompletedEvents() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const arr = JSON.parse(saved);
+                    completedEvents = new Set(arr);
+                } catch (e) {
+                    completedEvents = new Set();
+                }
+            }
+        }
+
+        function saveCompletedEvents() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify([...completedEvents]));
+        }
+        // ------------------------------
 
         function updateProgress() {
             const totalEvents = tripData.reduce((sum, day) => sum + day.events.length, 0);
@@ -600,13 +620,18 @@
 
             // Add event listeners to cards and checkboxes
             document.querySelectorAll('.event-card').forEach(card => {
-                card.addEventListener('click', function() {
+                card.addEventListener('click', function(e) {
                     const eventId = this.dataset.eventId;
+
+                    // 위치 클릭으로 인한 중복 토글을 막고 싶으면 아래 if로 거를 수 있음
+                    // if (e.target.closest('.event-location')) return;
+
                     if (completedEvents.has(eventId)) {
                         completedEvents.delete(eventId);
                     } else {
                         completedEvents.add(eventId);
                     }
+                    saveCompletedEvents();
                     updateProgress();
                     renderDayContent(currentDay);
                 });
@@ -650,6 +675,7 @@
         }
 
         // Initialize
+        loadCompletedEvents();
         setupDayTabs();
         renderDayContent(0);
         updateProgress();
